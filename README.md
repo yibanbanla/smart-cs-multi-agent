@@ -29,7 +29,7 @@
 |------|----------|------|
 | 编排框架 | LangGraph | 多 Agent 状态编排 |
 | API | FastAPI | REST 接口 |
-| LLM | OpenAI Compatible API | 路由、生成、审查 |
+| LLM | LiteLLM + OpenAI Compatible API | 路由、生成、审查 |
 | 向量检索 | FAISS | 长期记忆与知识检索 |
 | 缓存 | Redis | 短期记忆 |
 | 追踪 | OpenTelemetry | 链路追踪与指标 |
@@ -73,7 +73,7 @@
 
 - Python 3.11+
 - 可选：Redis、Docker
-- 一个可用的 `OPENAI_API_KEY`
+- 一个可用的 LiteLLM / OpenAI 兼容接口密钥
 
 ### 方式一：本地运行
 
@@ -83,7 +83,7 @@ source .venv/bin/activate  # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 cp .env.example .env
 
-# 编辑 .env，至少填写 OPENAI_API_KEY
+# 编辑 .env，至少填写 LITELLM_API_KEY
 python -m api.main
 ```
 
@@ -111,6 +111,7 @@ smart-cs-multi-agent/
 ├── requirements.txt
 ├── Dockerfile
 ├── docker-compose.yml
+├── llm.py
 ├── agents/
 │   ├── supervisor.py
 │   ├── intent_router.py
@@ -135,8 +136,40 @@ smart-cs-multi-agent/
     └── interview/
 ```
 
+## 模型配置
+
+- 模型接入统一放在 [llm.py](D:/develop/smart-cs-multi-agent/llm.py)
+- 模型参数统一放在 [llm/model_config.json](D:/develop/smart-cs-multi-agent/llm/model_config.json)
+
+默认配置示例：
+
+- 默认 chat profile：`qwen_chat_27b`
+- 默认 embedding profile：`qwen_embedding_8b`
+- 默认 rerank profile：`qwen_rerank_8b`
+- 默认模型：`openai/Qwen/Qwen3.6-27B`
+- 默认接口地址：`http://192.168.132.100:4000`
+- 默认密钥环境变量：`LITELLM_API_KEY`
+
+当前配置文件已支持多版本扩展，例如：
+
+- `qwen_chat_27b`
+- `qwen_embedding_8b`
+- `qwen_rerank_8b`
+
+切换默认模型有两种方式：
+
+- 直接修改 [llm/model_config.json](D:/develop/smart-cs-multi-agent/llm/model_config.json) 里的 `default_profiles`
+- 在环境变量中设置 `LITELLM_PROFILE`
+
+如果要分别切三类模型，优先使用这些环境变量：
+
+- `LITELLM_CHAT_PROFILE`
+- `LITELLM_EMBEDDING_PROFILE`
+- `LITELLM_RERANK_PROFILE`
+
 ## 关键代码入口
 
+- 模型接入：[llm/llm.py](D:/develop/smart-cs-multi-agent/llm/llm.py)
 - Supervisor 编排：[agents/supervisor.py](D:/develop/smart-cs-multi-agent/agents/supervisor.py)
 - FastAPI 入口：[api/main.py](D:/develop/smart-cs-multi-agent/api/main.py)
 - MCP 服务端：[mcp/mcp_server.py](D:/develop/smart-cs-multi-agent/mcp/mcp_server.py)

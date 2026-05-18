@@ -1,0 +1,30 @@
+{
+  "default_profiles": {
+    "chat": "qwen_chat_27b",
+    "embedding": "qwen_embedding_8b",
+    "rerank": "qwen_rerank_8b"
+  },
+  "defaults": {
+    "api_base": "http://192.168.132.100:4000",
+    "api_key_env": "LITELLM_API_KEY",
+    "temperature": 0,
+    "timeout": 30
+  },
+  "profiles": {
+    "qwen_chat_27b": {
+      "type": "chat",
+      "model": "openai/Qwen/Qwen3.6-27B",
+      "description": "默认对话模型"
+    },
+    "qwen_embedding_8b": {
+      "type": "embedding",
+      "model": "openai/Qwen/Qwen3-Embedding-8B",
+      "description": "默认向量模型"
+    },
+    "qwen_rerank_8b": {
+      "type": "rerank",
+      "model": "openai/Qwen/Qwen3-Reranker-8B",
+      "description": "默认重排模型"
+    }
+  }
+}

@@ -19,6 +19,7 @@ from agents.intent_router import IntentRouterAgent
 from agents.knowledge_rag import KnowledgeRAGAgent
 from agents.ticket_handler import TicketHandlerAgent
 from agents.compliance_checker import ComplianceCheckerAgent
+from llm.llm import create_llm
 from memory.working_memory import WorkingMemory
 from memory.short_term import ShortTermMemory
 from memory.long_term import LongTermMemory
@@ -164,7 +165,7 @@ def create_supervisor_graph(
         enable_checkpointing: 是否启用检查点（支持断点恢复）
     """
     if llm is None:
-        llm = ChatOpenAI(model="gpt-4o", temperature=0)
+        llm = create_llm()
     if working_memory is None:
         working_memory = WorkingMemory()
 
@@ -178,6 +179,7 @@ def create_supervisor_graph(
     graph = StateGraph(AgentState)
 
     graph.add_node("supervisor_route", supervisor.route_decision)
+    graph.add_node("intent_router", intent_router.process)
     graph.add_node("knowledge_rag", knowledge_agent.process)
     graph.add_node("ticket_handler", ticket_agent.process)
     graph.add_node("compliance_check", compliance_agent.process)

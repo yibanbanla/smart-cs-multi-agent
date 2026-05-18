@@ -7,7 +7,7 @@ python -m venv .venv
 source .venv/bin/activate  # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 cp .env.example .env
-# 编辑 .env，填入你的 API Key
+# 编辑 .env，填入你的 LiteLLM API Key
 python -m api.main
 ```
 
@@ -74,9 +74,11 @@ docker-compose up -d
 
 | 变量 | 说明 | 默认值 |
 |------|------|--------|
-| OPENAI_API_KEY | LLM API 密钥 | 无 |
-| OPENAI_BASE_URL | API 端点 | https://api.openai.com/v1 |
-| MODEL_NAME | 模型名称 | gpt-4o |
+| LITELLM_API_KEY | LiteLLM / OpenAI 兼容接口密钥 | 无 |
+| LITELLM_PROFILE | 默认启用的聊天模型 profile | qwen_chat_27b |
+| LITELLM_CHAT_PROFILE | 聊天模型 profile | qwen_chat_27b |
+| LITELLM_EMBEDDING_PROFILE | 向量模型 profile | qwen_embedding_8b |
+| LITELLM_RERANK_PROFILE | 重排模型 profile | qwen_rerank_8b |
 | REDIS_URL | Redis 地址 | redis://localhost:6379/0 |
 | FAISS_INDEX_PATH | FAISS 索引目录 | ./vector_store/faiss_index |
 | OTEL_SERVICE_NAME | 追踪服务名 | smart-cs-multi-agent |
@@ -84,6 +86,9 @@ docker-compose up -d
 
 ## 5. 部署建议
 
+- 如需切换模型或代理地址，修改 [llm/model_config.json](D:/develop/smart-cs-multi-agent/llm/model_config.json)
+- 如果希望不同环境切不同模型，优先使用环境变量 `LITELLM_PROFILE`
+- 如果 chat、embedding、rerank 需要分别切换，使用 `LITELLM_CHAT_PROFILE`、`LITELLM_EMBEDDING_PROFILE`、`LITELLM_RERANK_PROFILE`
 - 本地开发优先使用 FAISS + Redis
 - 生产环境建议将 Redis、向量索引和追踪后端拆分为独立服务
 - 如果不需要链路追踪，可关闭 Jaeger 和 OTLP 上报
